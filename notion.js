@@ -1,10 +1,11 @@
 const axios = require("axios");
 const express = require("express");
+const cors = require("cors");
 
 const NOTION_TOKEN = "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";
 const databases = {
-  programas: "1802d422723480acaa35ccb1b45f4d67"
-}
+  programas: "1802d422723480acaa35ccb1b45f4d67",
+};
 
 const headers = {
   Authorization: `Bearer ${NOTION_TOKEN}`,
@@ -41,8 +42,8 @@ const obtenerProgramas = async (numPages = null) => {
   }
 };
 
-
 const app = express();
+app.use(cors());
 
 app.get("/programas", async (req, res) => {
   const pages = await obtenerProgramas();
@@ -51,18 +52,17 @@ app.get("/programas", async (req, res) => {
     const title = props.title;
     const image = props.imagenes;
     const paragraph = props.paragraph;
-    console.log("leyedo datos de notion")
+    console.log("leyedo datos de notion");
     return {
-      title: title.title[0].text.content,
-      image: image.files[0].file.url,
-      paragraph: paragraph.rich_text[0].text.content,
+      title: title?.title[0]?.text?.content ? title.title[0].text.content : "",
+      image: image?.files[0]?.file?.url ? image.files[0].file.url : "",
+      paragraph: paragraph?.rich_text[0]?.text?.content
+        ? paragraph.rich_text[0].text.content
+        : "",
     };
   });
   res.send(datos);
 });
-
-
-
 
 app.listen(3000, () => {
   console.log("Servicio en funcionamiento");
